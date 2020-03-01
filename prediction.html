@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>What if you were in Titaniv..!</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" media="screen" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.3/css/bootstrap-select.min.css">
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.3/js/bootstrap-select.min.js"></script>
+	</head>
+	<script type="text/javascript">
+		$(document).ready(function(e) {
+		$('.selectpicker').selectpicker();
+		});
+		var prediction = null
+	</script>
+	<body>
+		<div class="container">
+			<h2>What if you were in Titanic...!</h2>
+			<form action="/predict" style="margin-top: 20px;" method="POST">
+				<div class="form-group" style="margin-top: 20px;">
+					<label for="name">Name:</label>
+					<input type="text" class="form-control" id="name" placeholder="Enter name" name="name" value="Emily">
+				</div>
+				<div class="form-group" style="margin-top: 20px;">
+					<label for="age">Age:</label>
+					<select class="selectpicker" name="age" id="age">
+								<option value="0" disabled selected>Your age</option>
+						<option value="1">0 - 10</option>
+						<option value="2">10 - 20</option>
+						<option value="3">20 - 30</option>
+						<option value="4">30 - 40</option>
+						<option value="5">40 - 50</option>
+						<option value="6">50 - 60</option>
+						<option value="7">>60</option>
+					</select>
+			
+				</div>
+				<div class="form-group" style="margin-top: 20px;">
+					<label for="pclass">Passenger class:</label>
+					<select class="selectpicker" name="pclass" id="pclass">
+								<option value="0" disabled selected>Passenger class</option>
+						<option value="1">First class</option>
+						<option value="2">Second class</option>
+						<option value="3">Third class</option>
+					</select>
+			
+				</div>
+				<div class="form-group" style="margin-top: 20px;">
+					<label for="sib">Number of siblings on Titanic</label>
+					<select class="selectpicker" name="sib" id="sib">
+								<option value="-1" disabled selected>siblings</option>
+								<option value="0">0</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+					</select>
+			
+				</div>
+				<div class="form-group" style="margin-top: 20px;">
+					<label for="emb">Embarked</label>
+					<select class="selectpicker" name="emb" id="emb">
+								<option value="a" disabled selected>Embarked</option>
+						<option value="0">Cherbourg</option>
+						<option value="1">Queenstown</option>
+						<option value="2">Southampton</option>
+					</select>
+					
+				</div>
+				<div class="form-group" style="margin-top: 20px;">
+					
+					<div class="checkbox">
+						<label><input type="radio" name="sex" value="1"> Male</label>
+						<label><input type="radio" name="sex" value="2" checked> Female</label>
+					</div>
+				</div>
+				<button type="button" class="btn btn-default" style="margin-top: 20px;" onclick="predict()" >Predict</button>
+			</form>
+			</div>
+			<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			  <div class="modal-dialog" role="document">
+			      <div class="modal-body" id="placeholder">
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+			<script type="text/javascript">
+				function predict(){
+					$.ajax({
+						url: "/predict",
+						type: 'POST',
+						success: function(data) {
+							prediction = data.key;
+							$('#exampleModal').modal('toggle');
+							if(prediction == "survived"){
+
+								$('#placeholder').html('<h1><span style="color: #00cc66">congratulations...!</span><br>If you were on Titanic then you are one of those 31% who Survived.</h1>')
+							}else{
+
+								$('#placeholder').html('<h1><span style="color: #ff6666">sorry...!</span><br>If you were on Titanic then you are one of those 69% who Died.</h1>')
+							}
+							
+					    },
+						error: function(er){
+							console.log(er);
+						},
+						data: {
+							age: $("#age option:selected").val(),
+							pclass: $("#pclass option:selected").val(),
+							sib: $("#sib option:selected").val(),
+							emb: $("#emb option:selected").val(),
+							sex: $("input[name='sex']:checked").val() 
+						}
+					});
+				}
+			</script>
+	</body>
+</html>
